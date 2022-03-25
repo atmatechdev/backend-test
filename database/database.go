@@ -15,7 +15,7 @@ var DB *gorm.DB
 
 func DBConnect() (*gorm.DB, error) {
 	// err := godotenv.Load(".env") // LOCAL DEVELOPMENT
-	err := godotenv.Load("public.env")
+	err := godotenv.Load("public.env") // FOR PRESENTATION / PUBLIC REPO
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

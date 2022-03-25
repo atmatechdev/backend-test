@@ -18,8 +18,9 @@ Using PostgreSQL:
 // Import database structure and initial values
 psql -h localhost -U <username> -d <databasename> -f database.sql
 
-// IMPORTANT: Edit public.env in accordance to your Postgres DB params
+// IMPORTANT: Edit public.env in accordance to your Postgres DB params & enter secret for JWT
 // e.g. in public.env file:
+TOKEN_SECRET=mytokensecret
 DB_USERNAME=postgres
 DB_PASSWORD=mysupersecretpassword
 DB_HOST=localhost
@@ -62,7 +63,7 @@ Host: `http://localhost:3000/`<br><br>
 These routes require **Authorization Bearer Token** on Request Header. In the form of:
     `"Authorization: "Bearer eyxxxxxx.xxxxx"` which can be obtained by Registering or Logging In.
 * Get all books, with Limit default to 10 books, and Page default to 1<br>
-    `GET /books?limit=<limit:int>?page=<page:int>`<br>
+    `GET /books?limit=<limit:int>&page=<page:int>`<br>
 
 * Get a book by ID<br>
     `GET /books/<id:int>`

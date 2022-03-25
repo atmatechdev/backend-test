@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"technical-test-atmatech/models"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
 )
 
 type customClaims struct {
@@ -20,12 +22,21 @@ type TokenData struct {
 	Exp    time.Time `json:"exp"`
 }
 
-var jwtSignature string = "mysecretcode"
 var tokenIssuer = "Atmatech"
 var tokenDuration = int64(24 * 3600) // 24 hours
 
+func getTokenSecret() string {
+	// err := godotenv.Load(".env") // LOCAL DEVELOPMENT
+	err := godotenv.Load("public.env") // FOR PRESENTATION / PUBLIC REPO
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	return os.Getenv("TOKEN_SECRET")
+}
+
 func GenerateUserToken(u models.User) (signedToken string) {
 	now := time.Now().Unix()
+	secret := getTokenSecret()
 	expAt := now + int64(tokenDuration)
 	claims := customClaims{
 		UserID: u.ID,
@@ -39,7 +50,7 @@ func GenerateUserToken(u models.User) (signedToken string) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// The signed token
-	signed, err := token.SignedString([]byte(jwtSignature))
+	signed, err := token.SignedString([]byte(secret))
 	if err != nil {
 		log.Fatal("Error while generating JWT: ", err)
 		return
@@ -50,11 +61,12 @@ func GenerateUserToken(u models.User) (signedToken string) {
 
 func ParseUserToken(bearerToken string) (*customClaims, error) {
 	var errMsg string
+	secret := getTokenSecret()
 	token, err := jwt.ParseWithClaims(
 		bearerToken,
 		&customClaims{},
 		func(t *jwt.Token) (interface{}, error) {
-			return []byte(jwtSignature), nil
+			return []byte(secret), nil
 		},
 	)
 	if err != nil {
